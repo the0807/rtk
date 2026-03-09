@@ -77,7 +77,9 @@ rtk gain        # Debe mostrar estadisticas de ahorro
 
 ```bash
 # 1. Instalar hook para Claude Code (recomendado)
-rtk init --global
+rtk init --global            # ~/.claude/ (a nivel de usuario)
+rtk init --project           # ./.claude/settings.json (compartido en equipo, committeable)
+rtk init --local             # ./.claude/settings.local.json (personal, gitignored)
 
 # 2. Reiniciar Claude Code, luego probar
 git status  # Automaticamente reescrito a rtk git status

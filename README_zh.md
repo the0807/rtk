@@ -78,7 +78,9 @@ rtk gain        # 应显示 token 节省统计
 
 ```bash
 # 1. 为 Claude Code 安装 hook（推荐）
-rtk init --global
+rtk init --global            # ~/.claude/（用户级别）
+rtk init --project           # ./.claude/settings.json（团队共享，可提交）
+rtk init --local             # ./.claude/settings.local.json（个人使用，gitignore）
 
 # 2. 重启 Claude Code，然后测试
 git status  # 自动重写为 rtk git status

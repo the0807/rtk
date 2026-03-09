@@ -100,17 +100,17 @@ rtk gain        # Should show token savings stats
 
 ```bash
 # 1. Install hook for Claude Code (recommended)
-rtk init --global
-# Follow instructions to register in ~/.claude/settings.json
-# Claude Code only by default (use --opencode for OpenCode)
+rtk init --global              # User-wide (~/.claude/settings.json)
+rtk init --project             # Team-shared (.claude/settings.json, committable)
+rtk init --local               # Personal (.claude/settings.local.json, gitignored)
 
 # 2. Restart Claude Code, then test
 git status  # Automatically rewritten to rtk git status
 ```
 
-The hook transparently rewrites Bash commands (e.g., `git status` -> `rtk git status`) before execution. Claude never sees the rewrite, it just gets compressed output.
+Three scopes: **global** applies to all projects for the current user, **project** is shared with your team via version control, and **local** is personal to your machine and gitignored.
 
-**Important:** the hook only runs on Bash tool calls. Claude Code built-in tools like `Read`, `Grep`, and `Glob` do not pass through the Bash hook, so they are not auto-rewritten. To get RTK's compact output for those workflows, use shell commands (`cat`/`head`/`tail`, `rg`/`grep`, `find`) or call `rtk read`, `rtk grep`, or `rtk find` directly.
+The hook transparently rewrites commands (e.g., `git status` -> `rtk git status`) before execution. Claude never sees the rewrite, it just gets compressed output.
 
 ## How It Works
 
@@ -278,8 +278,9 @@ The most effective way to use rtk. The hook transparently intercepts Bash comman
 ### Setup
 
 ```bash
-rtk init -g                 # Install hook + RTK.md (recommended)
-rtk init -g --opencode      # OpenCode plugin (instead of Claude Code)
+rtk init -g                 # Global: hook + RTK.md in ~/.claude/ (recommended)
+rtk init --project          # Project: hook + RTK.md in ./.claude/ (team-shared)
+rtk init --local            # Local: hook + RTK.md in ./.claude/ (personal, gitignored)
 rtk init -g --auto-patch    # Non-interactive (CI/CD)
 rtk init -g --hook-only     # Hook only, no RTK.md
 rtk init --show             # Verify installation
@@ -368,9 +369,11 @@ FAILED: 2/15 tests
 ### Uninstall
 
 ```bash
-rtk init -g --uninstall     # Remove hook, RTK.md, settings.json entry
-cargo uninstall rtk          # Remove binary
-brew uninstall rtk           # If installed via Homebrew
+rtk init -g --uninstall          # Remove global hook, RTK.md, settings.json entry
+rtk init --project --uninstall   # Remove project-scope RTK artifacts
+rtk init --local --uninstall     # Remove local-scope RTK artifacts
+cargo uninstall rtk              # Remove binary
+brew uninstall rtk               # If installed via Homebrew
 ```
 
 ## Documentation

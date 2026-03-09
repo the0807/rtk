@@ -77,7 +77,9 @@ rtk gain        # トークン節約統計が表示されるはず
 
 ```bash
 # 1. Claude Code 用フックをインストール（推奨）
-rtk init --global
+rtk init --global            # ~/.claude/（ユーザー全体）
+rtk init --project           # ./.claude/settings.json（チーム共有、コミット可能）
+rtk init --local             # ./.claude/settings.local.json（個人用、gitignore対象）
 
 # 2. Claude Code を再起動してテスト
 git status  # 自動的に rtk git status に書き換え

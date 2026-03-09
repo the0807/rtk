@@ -323,9 +323,17 @@ enum Commands {
 
     /// Initialize rtk instructions in CLAUDE.md
     Init {
-        /// Add to global ~/.claude/CLAUDE.md instead of local
-        #[arg(short, long)]
+        /// Add to global ~/.claude/ (user scope)
+        #[arg(short, long, group = "scope")]
         global: bool,
+
+        /// Add to project ./.claude/ with settings.json (team-shared)
+        #[arg(long, group = "scope")]
+        project: bool,
+
+        /// Add to project ./.claude/ with settings.local.json (personal)
+        #[arg(long, group = "scope")]
+        local: bool,
 
         /// Install OpenCode plugin (in addition to Claude Code)
         #[arg(long)]
@@ -1592,6 +1600,8 @@ fn main() -> Result<()> {
 
         Commands::Init {
             global,
+            project,
+            local,
             opencode,
             show,
             claude_md,
@@ -1600,13 +1610,22 @@ fn main() -> Result<()> {
             no_patch,
             uninstall,
         } => {
+            let scope = if global {
+                init::Scope::Global
+            } else if project {
+                init::Scope::Project
+            } else if local {
+                init::Scope::Local
+            } else {
+                init::Scope::Global
+            };
+
             if show {
                 init::show_config()?;
             } else if uninstall {
-                init::uninstall(global, cli.verbose)?;
+                init::uninstall(scope, cli.verbose)?;
             } else {
-                let install_opencode = opencode;
-                let install_claude = !opencode;
+                let _install_opencode = opencode;
 
                 let patch_mode = if auto_patch {
                     init::PatchMode::Auto
@@ -1615,15 +1634,7 @@ fn main() -> Result<()> {
                 } else {
                     init::PatchMode::Ask
                 };
-                init::run(
-                    global,
-                    install_claude,
-                    install_opencode,
-                    claude_md,
-                    hook_only,
-                    patch_mode,
-                    cli.verbose,
-                )?;
+                init::run(scope, claude_md, hook_only, patch_mode, cli.verbose)?;
             }
         }
 

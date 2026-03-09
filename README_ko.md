@@ -77,7 +77,9 @@ rtk gain        # 토큰 절약 통계 표시되어야 함
 
 ```bash
 # 1. Claude Code용 hook 설치 (권장)
-rtk init --global
+rtk init --global            # ~/.claude/ (사용자 전체)
+rtk init --project           # ./.claude/settings.json (팀 공유, 커밋 가능)
+rtk init --local             # ./.claude/settings.local.json (개인용, gitignore 대상)
 
 # 2. Claude Code 재시작 후 테스트
 git status  # 자동으로 rtk git status로 재작성

@@ -1050,11 +1050,12 @@ Modules with Exit Code Preservation:
 2. LLM Integration (CLAUDE.md)
    ────────────────────────────
    Locations:
-   • Global: ~/.config/rtk/CLAUDE.md
-   • Local:  ./CLAUDE.md (project-specific)
+   • Global:  ~/.claude/                      (user-wide)
+   • Project: ./.claude/settings.json         (team-shared, committable)
+   • Local:   ./.claude/settings.local.json   (personal, gitignored)
 
    Purpose: Instruct LLM (Claude Code) to use rtk prefix
-   Created by: rtk init [--global]
+   Created by: rtk init [--global | --project | --local]
 
    Template (init.rs:40-60):
    # CLAUDE.md
@@ -1073,11 +1074,13 @@ Modules with Exit Code Preservation:
 │                      rtk init Workflow                                 │
 └────────────────────────────────────────────────────────────────────────┘
 
-$ rtk init [--global]
+$ rtk init [--global | --project | --local]
       ↓
-Check existing CLAUDE.md:
-  • --global? → ~/.config/rtk/CLAUDE.md
-  • else      → ./CLAUDE.md
+Check target location:
+  • --global?  → ~/.claude/
+  • --project? → ./.claude/settings.json       (team-shared, committable)
+  • --local?   → ./.claude/settings.local.json  (personal, gitignored)
+  • (default)  → ./CLAUDE.md
       ↓
       ├─ Exists? → Warn user, ask to overwrite
       └─ Not exists? → Continue

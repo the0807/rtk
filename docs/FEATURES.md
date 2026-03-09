@@ -1213,20 +1213,48 @@ Sortie filtree retournee a Claude (~10 tokens vs ~200)
 ### Installation
 
 ```bash
-rtk init -g                     # Installation recommandee (hook + RTK.md)
+# Portees d'installation
+rtk init --global               # ~/.claude/ (user-wide, recommande)
+rtk init --project              # ./.claude/settings.json (team-shared, committable)
+rtk init --local                # ./.claude/settings.local.json (personal, gitignored)
+
+# Raccourcis
+rtk init -g                     # Equivalent de --global
 rtk init -g --auto-patch        # Non-interactif (CI/CD)
 rtk init -g --hook-only         # Hook seul, sans RTK.md
-rtk init --show                 # Verifier l'installation
-rtk init -g --uninstall         # Desinstaller
+
+# Verification et desinstallation
+rtk init --show                 # Verifier l'installation (toutes les portees)
+rtk init -g --uninstall         # Desinstaller (global)
+rtk init --project --uninstall  # Desinstaller (project)
+rtk init --local --uninstall    # Desinstaller (local)
 ```
 
 ### Fichiers installes
+
+**`--global` (user-wide) :**
 
 | Fichier | Description |
 |---------|-------------|
 | `~/.claude/hooks/rtk-rewrite.sh` | Script hook (delegue a `rtk rewrite`) |
 | `~/.claude/RTK.md` | Instructions minimales pour le LLM |
 | `~/.claude/settings.json` | Enregistrement du hook PreToolUse |
+
+**`--project` (team-shared, committable) :**
+
+| Fichier | Description |
+|---------|-------------|
+| `./.claude/hooks/rtk-rewrite.sh` | Script hook (delegue a `rtk rewrite`) |
+| `./.claude/RTK.md` | Instructions minimales pour le LLM |
+| `./.claude/settings.json` | Enregistrement du hook PreToolUse |
+
+**`--local` (personal, gitignored) :**
+
+| Fichier | Description |
+|---------|-------------|
+| `./.claude/hooks/rtk-rewrite.sh` | Script hook (delegue a `rtk rewrite`) |
+| `./.claude/RTK.md` | Instructions minimales pour le LLM |
+| `./.claude/settings.local.json` | Enregistrement du hook PreToolUse (gitignored) |
 
 ### `rtk rewrite` -- Recriture de commande
 

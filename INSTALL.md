@@ -77,12 +77,23 @@ rtk gain  # MUST show token savings, not "command not found"
   ├─ YES → rtk init -g              (recommended)
   │         Hook + RTK.md (~10 tokens in context)
   │         Commands auto-rewritten transparently
+  │         Scope: ~/.claude/ (user-wide)
   │
   ├─ YES, minimal → rtk init -g --hook-only
   │         Hook only, nothing added to CLAUDE.md
   │         Zero tokens in context
   │
-  └─ NO, single project → rtk init
+  ├─ NO, team project → rtk init --project
+  │         Hook + RTK.md in ./.claude/
+  │         Patches ./.claude/settings.json (committed to repo)
+  │         Shared with all team members
+  │
+  ├─ NO, personal per-project → rtk init --local
+  │         Hook + RTK.md in ./.claude/
+  │         Patches ./.claude/settings.local.json (gitignored)
+  │         Only affects you, not committed to repo
+  │
+  └─ NO, legacy → rtk init
             Local CLAUDE.md only (137 lines)
             No hook, no global effect
 ```
@@ -137,9 +148,45 @@ RTK backs up existing settings.json before changes. Restore if needed:
 cp ~/.claude/settings.json.bak ~/.claude/settings.json
 ```
 
-### Alternative: Local Project Setup
+### Alternative: Project-Scope Setup (Team-Shared)
 
-**Best for: Single project without hook**
+**Best for: Teams that want RTK active for a specific repo**
+
+```bash
+cd /path/to/your/project
+rtk init --project
+# → Installs hook to ./.claude/hooks/rtk-rewrite.sh
+# → Creates ./.claude/RTK.md
+# → Patches ./.claude/settings.json (committed to repo, shared with team)
+
+rtk init --project --auto-patch    # Patch without prompting
+rtk init --project --no-patch      # Print manual instructions instead
+rtk init --project --hook-only     # Hook only, no RTK.md
+```
+
+**Token savings**: Same as global (~99.5%), scoped to this project only
+
+### Alternative: Local-Scope Setup (Personal, Gitignored)
+
+**Best for: Personal RTK usage in a project without affecting teammates**
+
+```bash
+cd /path/to/your/project
+rtk init --local
+# → Installs hook to ./.claude/hooks/rtk-rewrite.sh
+# → Creates ./.claude/RTK.md
+# → Patches ./.claude/settings.local.json (gitignored, personal only)
+
+rtk init --local --auto-patch      # Patch without prompting
+rtk init --local --no-patch        # Print manual instructions instead
+rtk init --local --hook-only       # Hook only, no RTK.md
+```
+
+**Token savings**: Same as global (~99.5%), personal to you only
+
+### Alternative: Legacy Local Setup
+
+**Best for: Single project without hook (pre-0.22 style)**
 
 ```bash
 cd /path/to/your/project
@@ -147,6 +194,15 @@ rtk init  # Creates ./CLAUDE.md with full RTK instructions (137 lines)
 ```
 
 **Token savings**: Instructions loaded only for this project
+
+### Scope Comparison
+
+| Scope | Flag | Settings file | Shared? | Location |
+|-------|------|---------------|---------|----------|
+| Global | `-g` / `--global` | `~/.claude/settings.json` | User-wide (all projects) | `~/.claude/` |
+| Project | `--project` | `./.claude/settings.json` | Team (committed to repo) | `./.claude/` |
+| Local | `--local` | `./.claude/settings.local.json` | Personal (gitignored) | `./.claude/` |
+| Legacy | _(none)_ | N/A | Project only | `./CLAUDE.md` |
 
 ### Upgrading from Previous Version
 
@@ -240,22 +296,47 @@ rtk vitest run
 
 ## Uninstalling
 
-### Complete Removal (Global Installations Only)
+### Global Uninstall
 
 ```bash
-# Complete removal (global installations only)
 rtk init -g --uninstall
 
 # What gets removed:
 #   - Hook: ~/.claude/hooks/rtk-rewrite.sh
 #   - Context: ~/.claude/RTK.md
 #   - Reference: @RTK.md line from ~/.claude/CLAUDE.md
-#   - Registration: RTK hook entry from settings.json
+#   - Registration: RTK hook entry from ~/.claude/settings.json
 
 # Restart Claude Code after uninstall
 ```
 
-**For Local Projects**: Manually remove RTK block from `./CLAUDE.md`
+### Project-Scope Uninstall
+
+```bash
+cd /path/to/your/project
+rtk init --project --uninstall
+
+# What gets removed:
+#   - Hook: ./.claude/hooks/rtk-rewrite.sh
+#   - Context: ./.claude/RTK.md
+#   - Registration: RTK hook entry from ./.claude/settings.json
+```
+
+### Local-Scope Uninstall
+
+```bash
+cd /path/to/your/project
+rtk init --local --uninstall
+
+# What gets removed:
+#   - Hook: ./.claude/hooks/rtk-rewrite.sh
+#   - Context: ./.claude/RTK.md
+#   - Registration: RTK hook entry from ./.claude/settings.local.json
+```
+
+### Legacy Local Projects
+
+Manually remove the RTK block from `./CLAUDE.md`.
 
 ### Binary Removal
 
